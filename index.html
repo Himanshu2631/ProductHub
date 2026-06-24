@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProductHub - API Explorer</title>
+  
+  <!-- Premium Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Variables for Premium Dark/Glassmorphic Theme */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #10b981;
+      --shadow-indigo: rgba(99, 102, 241, 0.15);
+      
+      /* Category Badge Colors */
+      --badge-electronics: #3b82f6;
+      --badge-fashion: #ec4899;
+      --badge-books: #eab308;
+      --badge-sports: #10b981;
+      --badge-home: #8b5cf6;
+      --badge-beauty: #f97316;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Assignment-Focused Messaging Banner */
+    .assignment-banner {
+      width: 100%;
+      background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(192, 132, 252, 0.1));
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #c084fc;
+      letter-spacing: 0.5px;
+    }
+
+    /* Glassmorphism Header */
+    header {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      border-radius: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-container h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-container p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Professional Header Badges */
+    .header-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .h-badge {
+      font-size: 0.72rem;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2rem;
+      color: var(--text-muted);
+    }
+
+    /* Controls: Filter Dropdown & API Button */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    select {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.55rem 1.2rem;
+      border-radius: 0.75rem;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    select:hover, select:focus {
+      border-color: var(--primary);
+    }
+
+    /* Backend Stats Section */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .stats-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stats-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .stats-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .stats-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    .stats-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stats-subtext {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Product Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    /* Product Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.25rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: transparent;
+      transition: background 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25), 0 0 10px var(--shadow-indigo);
+    }
+
+    .card:hover::before {
+      background: linear-gradient(90deg, var(--primary), #c084fc);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .product-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text-main);
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .badge-electronics { background-color: var(--badge-electronics); }
+    .badge-fashion { background-color: var(--badge-fashion); }
+    .badge-books { background-color: var(--badge-books); }
+    .badge-sports { background-color: var(--badge-sports); }
+    .badge-home { background-color: var(--badge-home); }
+    .badge-beauty { background-color: var(--badge-beauty); }
+
+    .badge-id {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      text-transform: none;
+      font-family: monospace;
+      font-size: 0.7rem;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: auto;
+    }
+
+    .price-tag {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .date-icon {
+      width: 14px;
+      height: 14px;
+      fill: var(--text-muted);
+    }
+
+    /* Footer & Load More Button */
+    .footer-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .btn {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: var(--primary);
+      border: none;
+      padding: 0.8rem 2.2rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px var(--shadow-indigo);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-sm {
+      padding: 0.55rem 1.2rem;
+      font-size: 0.85rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      box-shadow: none;
+    }
+
+    .btn-sm:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .pagination-helper {
+      font-size: 0.8rem;
+      color: var(--primary);
+      font-weight: 500;
+      opacity: 0.95;
+    }
+
+    .status-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Spinner Loader */
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top: 3px solid var(--primary);
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Skeletons */
+    .skeleton {
+      animation: skeleton-loading 1.2s linear infinite alternate;
+      min-height: 220px;
+    }
+
+    @keyframes skeleton-loading {
+      0% { background-color: rgba(30, 41, 59, 0.4); }
+      100% { background-color: rgba(30, 41, 59, 0.8); }
+    }
+
+    .skeleton-text {
+      width: 100%;
+      height: 16px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Empty state card */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 5rem 2rem;
+      background: var(--card-bg);
+      border: 1px dashed var(--card-border);
+      border-radius: 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+      color: var(--text-main);
+      margin-bottom: 0.75rem;
+      font-size: 1.4rem;
+    }
+
+    /* Modal Overlay & Card Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 1.5rem;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 1.25rem;
+      width: 100%;
+      max-width: 600px;
+      padding: 2rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .api-endpoint {
+      background: #0f172a;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .api-method {
+      background: var(--primary);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      margin-right: 0.5rem;
+    }
+
+    .api-path {
+      font-family: monospace;
+      font-weight: 600;
+      color: #c084fc;
+      word-break: break-all;
+    }
+
+    .api-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .api-payload-doc h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .api-payload-doc pre {
+      background: #0f172a;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--card-border);
+      overflow-x: auto;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Banner (Assignment focused messaging) -->
+    <div class="assignment-banner">
+      200,000 Product Dataset &bull; Cursor Pagination &bull; PostgreSQL &bull; Real-Time Filtering
+    </div>
+
+    <!-- Header Block -->
+    <header>
+      <div class="logo-container">
+        <h1>ProductHub</h1>
+        <p>Real-time Cursor Pagination Demo (200K Dataset)</p>
+        
+        <div class="header-badges">
+          <span class="h-badge">📦 Total Products: 200,000+</span>
+          <span class="h-badge">🐘 PostgreSQL Database</span>
+          <span class="h-badge">⚡ Cursor Pagination</span>
+          <span class="h-badge">🚀 Indexed Queries</span>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <div class="filter-wrapper">
+          <span class="filter-label">Category:</span>
+          <select id="categorySelect">
+            <option value="">All Categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Books">Books</option>
+            <option value="Sports">Sports</option>
+            <option value="Home">Home</option>
+            <option value="Beauty">Beauty</option>
+          </select>
+        </div>
+        
+        <button id="viewApiBtn" class="btn btn-sm">
+          <svg style="margin-right: 0.25rem; vertical-align: middle;" viewBox="0 0 24 24" width="16" height="16">
+            <path d="M12,2C6.477,2,2,6.477,2,12s4.477,10,10,10,10-4.477,10-10S17.523,2,12,2z M12,20c-4.411,0-8-3.589-8-8s3.589-8,8-8s8,3.589,8,8 S16.411,20,12,20z M11,7h2v2h-2V7z M11,11h2v6h-2V11z" fill="currentColor"/>
+          </svg>
+          View API
+        </button>
+      </div>
+    </header>
+
+    <!-- Backend Stats Section -->
+    <div class="stats-row">
+      <div class="stats-card">
+        <div class="stats-icon">📦</div>
+        <div class="stats-info">
+          <span class="stats-label">Total Products</span>
+          <span class="stats-value">200,000+</span>
+        </div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-icon">⚡</div>
+        <div class="stats-info">
+          <span class="stats-label">Pagination Type</span>
+          <span class="stats-value">Cursor-Based</span>
+        </div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-icon">🐘</div>
+        <div class="stats-info">
+          <span class="stats-label">Database</span>
+          <span class="stats-value">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-icon">🚀</div>
+        <div class="stats-info">
+          <span class="stats-label">Query Performance</span>
+          <span class="stats-value" id="perfQueryTime">-- ms</span>
+          <span class="stats-subtext" id="perfResultsCount">-- results</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid Layout for Products -->
+    <div id="productGrid" class="grid">
+      <!-- Loaded products will insert here -->
+    </div>
+
+    <!-- Actions area (Load more) -->
+    <div class="footer-actions">
+      <button id="nextPageBtn" class="btn" disabled>
+        <span class="loader" id="btnLoader"></span>
+        <span id="btnText">Next 20 Products</span>
+      </button>
+      <p class="pagination-helper">Using cursor-based pagination for consistent results.</p>
+      <p id="statusMessage" class="status-text">Connecting to backend...</p>
+    </div>
+
+  </div>
+
+  <!-- API Documentation Modal -->
+  <div id="apiModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Backend API Explorer Documentation</h2>
+        <button id="closeModalBtn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="api-endpoint">
+          <span class="api-method">GET</span> <span class="api-path">/products</span>
+          <p class="api-desc">Fetches the first page of 20 products, sorted newest first.</p>
+        </div>
+        <div class="api-endpoint">
+          <span class="api-method">GET</span> <span class="api-path">/products?category=Electronics</span>
+          <p class="api-desc">Fetches the first page of products filtered by the specified category.</p>
+        </div>
+        <div class="api-endpoint">
+          <span class="api-method">GET</span> <span class="api-path">/products?cursor_created_at=2026-06-24T14:48:00.000Z&cursor_id=uuid-123</span>
+          <p class="api-desc">Fetches subsequent pages using the cursor values returned in <code>nextCursor</code> from the previous page's response.</p>
+        </div>
+        <div class="api-payload-doc">
+          <h3>JSON Response Format</h3>
+          <pre><code>{
+  "success": true,
+  "count": 20,
+  "queryTimeMs": 18,
+  "products": [ ... ],
+  "nextCursor": {
+    "cursor_created_at": "2026-06-24T14:48:00.000Z",
+    "cursor_id": "8f8b3c-..."
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration: If you deploy the frontend separately (e.g. to Vercel), paste your deployed Render backend URL here (e.g. 'https://producthub.onrender.com')
+    const DEPLOYED_BACKEND_URL = ''; 
+    
+    const API_BASE = (window.location.protocol === 'file:' || window.location.hostname.includes('vercel.app'))
+      ? (DEPLOYED_BACKEND_URL || 'http://localhost:3000')
+      : '';
+    
+    // Application State
+    let productsList = [];
+    let currentCursor = null; // Stores { cursor_created_at, cursor_id }
+    let selectedCategory = "";
+    const LIMIT = 20;
+
+    // DOM Elements
+    const productGrid = document.getElementById('productGrid');
+    const categorySelect = document.getElementById('categorySelect');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const btnLoader = document.getElementById('btnLoader');
+    const btnText = document.getElementById('btnText');
+    const statusMessage = document.getElementById('statusMessage');
+    const perfQueryTime = document.getElementById('perfQueryTime');
+    const perfResultsCount = document.getElementById('perfResultsCount');
+    
+    // Modal Elements
+    const apiModal = document.getElementById('apiModal');
+    const viewApiBtn = document.getElementById('viewApiBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Event Listeners
+    categorySelect.addEventListener('change', (e) => {
+      selectedCategory = e.target.value;
+      // Reset state for new filter query
+      productsList = [];
+      currentCursor = null;
+      productGrid.innerHTML = '';
+      fetchProducts();
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+      fetchProducts(true);
+    });
+
+    viewApiBtn.addEventListener('click', () => {
+      apiModal.style.display = 'flex';
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      apiModal.style.display = 'none';
+    });
+
+    // Close modal if user clicks outside content box
+    apiModal.addEventListener('click', (e) => {
+      if (e.target === apiModal) {
+        apiModal.style.display = 'none';
+      }
+    });
+
+    // Custom date formatting function (Jun 24, 2026 • 09:12 PM)
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[date.getMonth()];
+      const day = date.getDate();
+      const year = date.getFullYear();
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 turns into 12
+      return `${month} ${day}, ${year} • ${hours}:${minutes} ${ampm}`;
+    }
+
+    // Helper to format category badge class names
+    function getCategoryBadgeClass(category) {
+      return `badge-${category.toLowerCase()}`;
+    }
+
+    // Render skeleton loaders when API is pending
+    function renderSkeletons() {
+      productGrid.innerHTML += Array(8).fill(0).map(() => `
+        <div class="card skeleton">
+          <div class="card-header">
+            <div class="skeleton-text" style="width: 70%; height: 20px;"></div>
+            <div class="skeleton-text" style="width: 25%; height: 18px;"></div>
+          </div>
+          <div class="card-body">
+            <div class="skeleton-text" style="width: 40%; height: 24px; margin-top: 10px;"></div>
+            <div class="skeleton-text" style="width: 55%; height: 14px; margin-top: 5px;"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Core function to query products API
+    async function fetchProducts(isAppend = false) {
+      // Toggle button loading states
+      nextPageBtn.disabled = true;
+      btnLoader.style.display = 'inline-block';
+      btnText.textContent = isAppend ? 'Loading...' : 'Fetching...';
+      statusMessage.textContent = 'Contacting backend API...';
+
+      if (!isAppend) {
+        productGrid.innerHTML = '';
+        renderSkeletons();
+      }
+
+      try {
+        // Construct API URL with optional category filter & cursor parameters
+        let url = `${API_BASE}/products?limit=${LIMIT}`;
+        if (selectedCategory) {
+          url += `&category=${encodeURIComponent(selectedCategory)}`;
+        }
+        if (currentCursor) {
+          url += `&cursor_created_at=${encodeURIComponent(currentCursor.cursor_created_at)}`;
+          url += `&cursor_id=${encodeURIComponent(currentCursor.cursor_id)}`;
+        }
+
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Server returned status code: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Remove skeletons on load completion
+        const skeletons = document.querySelectorAll('.skeleton');
+        skeletons.forEach(el => el.remove());
+
+        if (data.success) {
+          const newProducts = data.products;
+          
+          if (isAppend) {
+            productsList = [...productsList, ...newProducts];
+          } else {
+            productsList = newProducts;
+          }
+
+          currentCursor = data.nextCursor; // Update cursor state
+
+          // Update real-time query performance stats
+          perfQueryTime.textContent = `${data.queryTimeMs !== undefined ? data.queryTimeMs : '--'} ms`;
+          perfResultsCount.textContent = `${newProducts.length} results`;
+
+          // Render updated layout
+          if (productsList.length === 0) {
+            productGrid.innerHTML = `
+              <div class="empty-state">
+                <h3>No Products Found</h3>
+                <p>No products match this category. Suggest selecting another category or seeding the database using <code>npm run seed</code>.</p>
+              </div>
+            `;
+            statusMessage.textContent = 'No records found.';
+          } else {
+            renderProducts(newProducts, isAppend);
+            statusMessage.textContent = `Loaded ${productsList.length} products.`;
+          }
+
+          // Enable next page button if another page is available
+          if (currentCursor) {
+            nextPageBtn.disabled = false;
+            btnText.textContent = 'Next 20 Products';
+          } else {
+            nextPageBtn.disabled = true;
+            btnText.textContent = 'No More Products';
+          }
+
+        } else {
+          throw new Error(data.message || 'API request failed');
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        
+        // Remove skeletons on error
+        const skeletons = document.querySelectorAll('.skeleton');
+        skeletons.forEach(el => el.remove());
+
+        statusMessage.textContent = `Error: ${err.message}. Please verify the Express server is running.`;
+        btnText.textContent = 'Retry Load';
+        nextPageBtn.disabled = false;
+        
+        perfQueryTime.textContent = '-- ms';
+        perfResultsCount.textContent = 'error';
+      } finally {
+        btnLoader.style.display = 'none';
+      }
+    }
+
+    // Render list elements to DOM
+    function renderProducts(products, isAppend) {
+      const cardsHtml = products.map(product => `
+        <div class="card">
+          <div class="card-header">
+            <h3 class="product-name">${product.name}</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-end;">
+              <span class="badge ${getCategoryBadgeClass(product.category)}">${product.category}</span>
+              <span class="badge badge-id">ID: ${product.id.substring(0, 6)}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="price-tag">$${parseFloat(product.price).toFixed(2)}</div>
+            <div class="date-row">
+              <svg class="date-icon" viewBox="0 0 24 24">
+                <path d="M12,2A10,10,0,1,0,22,12,10.011,10.011,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,12,20Zm1-13H11v6l5.2,3.2,0.8-1.3L13,11.7V7Z"/>
+              </svg>
+              <span>${formatDate(product.created_at)}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      if (isAppend) {
+        productGrid.innerHTML += cardsHtml;
+      } else {
+        productGrid.innerHTML = cardsHtml;
+      }
+    }
+
+    // Initial load on page mount
+    fetchProducts();
+  </script>
+</body>
+</html>
